@@ -1,0 +1,4 @@
+shell script that monitors file modifying times and outputs when file's changed,
+optionally flashes scroll lock light  
+bundles with "dsleep", which is just a fractional sleep,
+since gnu sleep allowing for less than a second (like sleep 0.5) isn't guaranteed to exist on the system
