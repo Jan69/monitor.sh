@@ -9,4 +9,4 @@ each -c setting the command for the next -f
 each -f executing another instance of the command set by last -c
 example, to turn off the scroll lock light flashing, and monitor files:
   `./monitor.sh -c "export" -f "allowLED=no" -c monitor -f file_1 -f file_2` etc
-do <Enter>+q to quit monitoring
+do <Enter>+q+<Enter> to quit monitoring
