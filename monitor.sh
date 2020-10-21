@@ -14,6 +14,8 @@ flashLED(){
  done
 }
 
+
+
 file="$1"
 if [ ! "$file" ];then
  echo "no file to monitor given"
@@ -21,17 +23,19 @@ if [ ! "$file" ];then
 fi
 
 for i in "$@";do
- echo "monitoring $i" >&2
- a="$(stat -c %Y "$file")" #base modification time (epoch)
- while true;do
-  b="$(stat -c %Y "$file")" #get new "last modified" time
-  if [ "$a" = "$b" -a "$b" != "" ];then #time unchanged & != null
-   true #no-op, could also negate the tests and skip it
-  else
-   a="$b" #update the base modification time
-   echo "FILE $file MODIFIED (on $(date +"%Y-%m-%d %T"))"
-   flashLED
-  fi
-  sleep 2
- done
+  echo "monitoring $i" >&2
+  a="$(stat -c %Y "$file")" #base modification time (epoch)
+  while true;do
+   b="$(stat -c %Y "$file")" #get new "last modified" time
+   if [ "$a" = "$b" -a "$b" != "" ];then #time unchanged & != null
+    true #no-op, could also negate the tests and skip it
+   else
+    a="$b" #update the base modification time
+    echo "FILE $file MODIFIED (on $(date +"%Y-%m-%d %T"))"
+    flashLED
+   fi
+   sleep 2
+  done
+ fi
 done
+
