@@ -7,6 +7,6 @@ getopt.sh and getopts.sh do exactly the same thing, for portability, one of them
 syntax for them is "-c command -f file/argument" any amount of them
 each -c setting the command for the next -f
 each -f executing another instance of the command set by last -c
-you can do "-c echo -f hello -f world"
-and it will execute "echo hello" and "echo world", useful if you do repeating commands,
-most useful for scripts, such as monitor.sh and cronjobs
+example, to turn off the scroll lock light flashing, and monitor files:
+  `./monitor.sh -c "export" -f "allowLED=no" -c monitor -f file_1 -f file_2` etc
+do <Enter>+q to quit monitoring

@@ -1,17 +1,20 @@
+#!/bin/sh
 #enable Scroll Lock keyboard LED toggle?
 allowLED="yes" #empty/commented=disabled
 enableLED(){  xset  led named "Scroll Lock";}
 disableLED(){ xset -led named "Scroll Lock";}
 flashLED(){
- for i in $(seq 3);do #10 flashes
-  enableLED
-  #each time led on for x seconds
-  sleep 0.5
-  disableLED
-  #need to see it's off too
-  sleep 0.5
-  #echo "cycle $i"
- done
+ if [ "$allowLED" = "yes" ];then
+  for i in $(seq 3);do #10 flashes
+   enableLED
+   #each time led on for x seconds
+   sleep 0.5
+   disableLED
+   #need to see it's off too
+   sleep 0.5
+   #echo "cycle $i"
+  done
+ fi
 }
 
 
@@ -22,7 +25,9 @@ if [ ! "$file" ];then
  exit 1
 fi
 
-for i in "$@";do
+monitor()
+ for i in "$@";do
+  {
   echo "monitoring $i" >&2
   a="$(stat -c %Y "$file")" #base modification time (epoch)
   while true;do
@@ -31,11 +36,21 @@ for i in "$@";do
     true #no-op, could also negate the tests and skip it
    else
     a="$b" #update the base modification time
-    echo "FILE $file MODIFIED (on $(date +"%Y-%m-%d %T"))"
+    printf "%s\t%s\n" "$file" "$(date +"%Y-%m-%d_%T")"
     flashLED
    fi
    sleep 2
   done
- fi
-done
+  }&
+  pid="$pid $!"
+ done
 
+#TODO: make a fallback between getopt and getopts
+#. ./getopt.sh
+. ./getopts.sh
+#or getopt, if you don't have getopts for some reason
+#exec_getopt "$@"
+exec_getopts "$@"
+echo "$pid"
+
+while read i;do case "$i" in ("q"*|"Q"*) echo "kill$pid";kill $pid;break;;esac;done
