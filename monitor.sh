@@ -25,10 +25,16 @@ if [ ! "$file" ];then
  exit 1
 fi
 
-monitor()
- for i in "$@";do
+monitor_command(){
+if [ "$monitor_command" ];then
+ "$monitor_command" "$@"
+else
+ flashLED
+fi
+}
+monitor(){
   {
-  echo "monitoring $i" >&2
+  echo "monitoring $file" >&2
   a="$(stat -c %Y "$file")" #base modification time (epoch)
   while true;do
    b="$(stat -c %Y "$file")" #get new "last modified" time
@@ -37,20 +43,19 @@ monitor()
    else
     a="$b" #update the base modification time
     printf "%s\t%s\n" "$file" "$(date +"%Y-%m-%d_%T")"
-    flashLED
+    monitor_command "$monitor_command_args"
    fi
    sleep 2
   done
   }&
-  pid="$pid $!"
- done
-
+  export pid="$pid $!"
+}
 #TODO: make a fallback between getopt and getopts
 #. ./getopt.sh
 . ./getopts.sh
 #or getopt, if you don't have getopts for some reason
 #exec_getopt "$@"
 exec_getopts "$@"
-echo "$pid"
+#echo "$pid"
 
 while read i;do case "$i" in ("q"*|"Q"*) echo "kill$pid";kill $pid;break;;esac;done

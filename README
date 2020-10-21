@@ -3,10 +3,28 @@ optionally flashes scroll lock light
 bundles with "dsleep", which is just a fractional sleep,
 since gnu sleep allowing for less than a second (like sleep 0.5) isn't guaranteed to exist on the system
 
+WARNING: interrupting the program (^C instead of Q to quit) will leave the monitoring threads active in the background!
+keep that in mind! you can killall monitor.sh to get rid of them, obviously...
+
 getopt.sh and getopts.sh do exactly the same thing, for portability, one of them should always work
 syntax for them is "-c command -f file/argument" any amount of them
 each -c setting the command for the next -f
 each -f executing another instance of the command set by last -c
-example, to turn off the scroll lock light flashing, and monitor files:
-  `./monitor.sh -c "export" -f "allowLED=no" -c monitor -f file_1 -f file_2` etc
 do <Enter>+q+<Enter> to quit monitoring
+
+examples:
+
+turn off the scroll lock light flashing, and monitor files:
+  ./monitor.sh -c "export" -f "allowLED=no" -c monitor -f file_1 -f file_2
+
+turn off the scroll lock light flashing only for the second file:
+  ./monitor.sh -c "monitor" -f file_1 -c "export" -f "allowLED=no" -c "monitor" -f file_2
+
+on file change, run "echo" with argument of "yeehaw"
+  ./monitor.sh -c "export" -f "monitor_command=echo" -c "export" -f "monitor_command_args=yeehaw" -c monitor -f file_1
+
+note:
+you'd probably want a wrapper around monitor.sh to make it easier to use,
+and since getopt doesn't like spaces and only one argument is handled for monitor_command,
+you would probably want to have monitor_command be a script/program, not a direct invocation,
+and try to get by with a single arg, or ask me to have more argument variables, or workaround some other way
